@@ -1,6 +1,6 @@
 import IScanStorage from "./interfaces/scanStorageInterface";
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
-import { ProbeStartData, ReportStartData } from "./types/startData";
+import { ProbeStartData, ReportStartData } from "../../service/scan/types/startData";
 
 
 export default class SupabaseStorage implements IScanStorage {

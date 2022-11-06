@@ -1,4 +1,4 @@
-import { ProbeStartData, ReportStartData } from "../types/startData";
+import { ProbeStartData, ReportStartData } from "../../../service/scan/types/startData";
 
 export default interface IScanStorage {
     saveReportStartData(report: ReportStartData);

@@ -3,10 +3,11 @@ import IScanService from "./interfaces/scanServiceInterface";
 import { ScanRequestResponse } from "./types/scanRequest";
 import { v4 as uuidv4 } from 'uuid';
 import IScanStorage from "../../storage/scans/interfaces/scanStorageInterface";
-import { ProbeStatus, ReportStatus } from "../../storage/scans/types/startData";
+import { ProbeStatus, ReportStatus } from "./types/startData";
+import IMessageQueue from "../../storage/messagequeue/interfaces/messageQueueInterface";
 
 export default class ScanService implements IScanService {
-    constructor(private readonly scanStorage: IScanStorage) { }
+    constructor(private readonly scanStorage: IScanStorage, private readonly messageQueue: IMessageQueue) { }
 
     async requestScan(scanRequest: CreateScanRequest): Promise<ScanRequestResponse> {
         const newReportId = uuidv4();
@@ -33,6 +34,15 @@ export default class ScanService implements IScanService {
                 reportId: newReportId
             })))
         ]);
+
+        this.messageQueue.publishProbeRequest(probes.map((probe) => ({
+            context: {
+                id: probe.uid,
+                name: probe.name,
+                target: probe.target
+            },
+            settings: probe.settings
+        })));
 
         return { reportId: newReportId };
     }

@@ -16,7 +16,6 @@ export enum ReportStatus {
     FINISHED = 'FINISHED',
 }
 
-
 export enum ProbeStatus {
     PENDING = 'PENDING',
     RUNNING = 'RUNNING',
