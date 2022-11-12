@@ -1,6 +1,6 @@
 import IScanStorage from "./interfaces/scanStorageInterface";
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
-import { ProbeStartData, ReportStartData } from "../../service/scan/types/startData";
+import { ProbeStartData, ScanStartData } from "../../service/scan/types/startData";
 
 
 export default class SupabaseStorage implements IScanStorage {
@@ -14,7 +14,7 @@ export default class SupabaseStorage implements IScanStorage {
         await this.supabaseClient.from('probes').insert(probes)
     }
 
-    async saveReportStartData(report: ReportStartData) {
+    async saveReportStartData(report: ScanStartData) {
         await this.supabaseClient.from('reports').insert(report)
     }
 }

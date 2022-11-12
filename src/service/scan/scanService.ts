@@ -3,7 +3,7 @@ import IScanService from "./interfaces/scanServiceInterface";
 import { ScanRequestResponse } from "./types/scanRequest";
 import { v4 as uuidv4 } from 'uuid';
 import IScanStorage from "../../storage/scans/interfaces/scanStorageInterface";
-import { ProbeStatus, ReportStatus } from "./types/startData";
+import { ProbeStatus, ScanStatus } from "./types/startData";
 import IMessageQueue from "../../storage/messagequeue/interfaces/messageQueueInterface";
 
 export default class ScanService implements IScanService {
@@ -21,25 +21,24 @@ export default class ScanService implements IScanService {
         })
 
         // Save start data in supabase
-        await Promise.all([
-            this.scanStorage.saveReportStartData({
-                id: newReportId,
-                status: ReportStatus.PENDING,
-                notification: false,
-            }),
+        await this.scanStorage.saveReportStartData({
+            id: newReportId,
+            status: ScanStatus.PENDING,
+            notification: false,
+            target: scanRequest.target
+        })
 
-            this.scanStorage.saveProbesStartData(probes.map((probe) => ({
-                id: probe.uid,
-                status: ProbeStatus.PENDING,
-                reportId: newReportId
-            })))
-        ]);
+        await this.scanStorage.saveProbesStartData(probes.map((probe) => ({
+            id: probe.uid,
+            status: ProbeStatus.PENDING,
+            reportId: newReportId
+        })))
 
         this.messageQueue.publishProbeRequest(probes.map((probe) => ({
             context: {
                 id: probe.uid,
                 name: probe.name,
-                target: probe.target
+                target: scanRequest.target
             },
             settings: probe.settings
         })));

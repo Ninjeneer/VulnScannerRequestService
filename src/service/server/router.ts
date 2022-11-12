@@ -17,4 +17,18 @@ export const setupRoutes = (server: Server) => {
             }
         }
     })
+
+    server.getFastify().get('/probes', async (req, res) => {
+        return [{
+            name: 'probe-nmap',
+            displayName: 'Scanner de vulnérabilités des services ouverts',
+            description: 'Cette sonde va tenter d’dentifier tous les services ouverts sur le serveur cible, et de trouver des vulnérabilités connues associées à leur version.',
+            type: 'Passive'
+        }, {
+            name: 'probe-nikto',
+            displayName: 'Scanner de domaines sensibles exposés',
+            description: 'Cette sonde va tenter de trouver les sous-domaines sensibles les plus connus, attachés au domaine cible.',
+            type: 'Passive'
+        }]
+    })
 }

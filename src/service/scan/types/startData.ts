@@ -1,7 +1,8 @@
-export type ReportStartData = {
+export type ScanStartData = {
     id: string;
     status: string;
     notification: boolean;
+    target: string;
 }
 
 export type ProbeStartData = {
@@ -10,7 +11,7 @@ export type ProbeStartData = {
     reportId: string;
 }
 
-export enum ReportStatus {
+export enum ScanStatus {
     PENDING = 'PENDING',
     RUNNING = 'RUNNING',
     FINISHED = 'FINISHED',
