@@ -6,9 +6,8 @@ export const setupRoutes = (server: Server) => {
     server.getFastify().post("/scans", async (req, res) => {
         try {
             const scanRequest = createScanRequest.parse(req.body);
-            await server.getScanService().requestScan(scanRequest);
-            // const report = await server.getScanService()
-            res.status(200).send();
+            const scanId = await server.getScanService().requestScan(scanRequest);
+            res.status(202).send({ scanId });
         } catch (e) {
             if (e instanceof z.ZodError) {
                 res.status(400).send(e);

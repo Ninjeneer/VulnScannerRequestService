@@ -21,7 +21,7 @@ export default class ScanService implements IScanService {
         })
 
         // Save start data in supabase
-        await this.scanStorage.saveReportStartData({
+        await this.scanStorage.saveScanStartData({
             id: newReportId,
             status: ScanStatus.PENDING,
             notification: false,

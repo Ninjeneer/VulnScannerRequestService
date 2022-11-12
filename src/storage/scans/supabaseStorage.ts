@@ -14,7 +14,8 @@ export default class SupabaseStorage implements IScanStorage {
         await this.supabaseClient.from('probes').insert(probes)
     }
 
-    async saveReportStartData(report: ScanStartData) {
+    async saveScanStartData(report: ScanStartData): Promise<{ reportId: string }> {
         await this.supabaseClient.from('reports').insert(report)
+        return { reportId: report.id }
     }
 }
