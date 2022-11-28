@@ -3,12 +3,13 @@ export type ScanStartData = {
     status: string;
     notification: boolean;
     target: string;
+    periodicity: string;
 }
 
 export type ProbeStartData = {
     id: string;
     status: ProbeStatus;
-    reportId: string;
+    scanId: string;
 }
 
 export enum ScanStatus {

@@ -1,3 +1,3 @@
 export type ScanRequestResponse = {
-    reportId: string;
+    scanId: string;
 }

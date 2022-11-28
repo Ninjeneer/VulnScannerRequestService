@@ -10,7 +10,7 @@ export default class ScanService implements IScanService {
     constructor(private readonly scanStorage: IScanStorage, private readonly messageQueue: IMessageQueue) { }
 
     async requestScan(scanRequest: CreateScanRequest): Promise<ScanRequestResponse> {
-        const newReportId = uuidv4();
+        const newScanId = uuidv4();
 
         // Assing uids to probes
         const probes = scanRequest.probes.map((probe) => {
@@ -22,16 +22,17 @@ export default class ScanService implements IScanService {
 
         // Save start data in supabase
         await this.scanStorage.saveScanStartData({
-            id: newReportId,
+            id: newScanId,
             status: ScanStatus.PENDING,
             notification: false,
-            target: scanRequest.target
+            target: scanRequest.target,
+            periodicity: scanRequest.periodicity
         })
 
         await this.scanStorage.saveProbesStartData(probes.map((probe) => ({
             id: probe.uid,
             status: ProbeStatus.PENDING,
-            reportId: newReportId
+            scanId: newScanId,
         })))
 
         this.messageQueue.publishProbeRequest(probes.map((probe) => ({
@@ -43,6 +44,6 @@ export default class ScanService implements IScanService {
             settings: probe.settings
         })));
 
-        return { reportId: newReportId };
+        return { scanId: newScanId };
     }
 }

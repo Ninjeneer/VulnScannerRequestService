@@ -13,7 +13,7 @@ describe('Scan Service Tests', () => {
     let supabaseStorage: SupabaseStorage;
     let awsSqsQueue: AwsSqsQueue;
 
-    let spySaveReportStartData: jest.SpyInstance;
+    let spySaveScanStartData: jest.SpyInstance;
     let spySaveProbeStartData: jest.SpyInstance;
     let spyPublishProbeRequest: jest.SpyInstance;
 
@@ -21,7 +21,7 @@ describe('Scan Service Tests', () => {
         supabaseStorage = new SupabaseStorage();
         awsSqsQueue = new AwsSqsQueue();
         scanService = new ScanService(supabaseStorage, awsSqsQueue);
-        spySaveReportStartData = jest.spyOn(supabaseStorage, 'saveScanStartData');
+        spySaveScanStartData = jest.spyOn(supabaseStorage, 'saveScanStartData');
         spySaveProbeStartData = jest.spyOn(supabaseStorage, 'saveProbesStartData');
         spyPublishProbeRequest = jest.spyOn(awsSqsQueue, 'publishProbeRequest');
     })
@@ -29,23 +29,25 @@ describe('Scan Service Tests', () => {
     it('should request a scan', async () => {
         const scanRequest: CreateScanRequest = {
             target: 'test.com',
+            periodicity: '* * * * *',
             probes: [
                 { name: 'probe-nmap', settings: {} } 
             ]
         }
         const response = await scanService.requestScan(scanRequest);
-        expect(response.reportId).toBeDefined()
-        expect(spySaveReportStartData).toHaveBeenCalledWith({
-            id: response.reportId,
+        expect(response.scanId).toBeDefined()
+        expect(spySaveScanStartData).toHaveBeenCalledWith({
+            id: response.scanId,
             status: ScanStatus.PENDING,
             notification: false,
-            target: scanRequest.target
+            target: scanRequest.target,
+            periodicity: '* * * * *'
         });
         expect(spySaveProbeStartData).toHaveBeenCalledWith([
             {
                 id: expect.any(String),
                 status: ScanStatus.PENDING,
-                reportId: response.reportId
+                scanId: response.scanId
             }
         ]);
         expect(spyPublishProbeRequest).toHaveBeenCalledWith([{
