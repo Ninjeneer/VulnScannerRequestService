@@ -20,7 +20,7 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
-    "@fastify/cors": "^8.1.1",
+    "@fastify/cors": "^8.2.0",
     "@supabase/supabase-js": "^2.0.5",
     "aws-sdk": "^2.1248.0",
     "dotenv": "^16.0.3",
