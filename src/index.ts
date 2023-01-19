@@ -21,7 +21,7 @@ requireEnvVars([
 
 function bootstrap() {
     const scanService = new ScanService(new SupabaseStorage(), new AwsSqsQueue());
-    const server = new Server(scanService);
+    const server = new Server(scanService); 
 
     server.start();
 }

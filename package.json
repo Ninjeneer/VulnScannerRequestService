@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "nodemon src/index.ts",
+    "dev:docker": "docker-compose -f docker-compose.yml up",
     "test": "jest test"
   },
   "author": "",

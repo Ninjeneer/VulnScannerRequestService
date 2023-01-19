@@ -9,4 +9,6 @@ services:
       
     image: vuln-request-service
     ports:
-      - 3000:3000
+      - 3001:3000
+    volumes:
+     - .:/app

@@ -11,6 +11,7 @@ export default class ScanService implements IScanService {
 
     async requestScan(scanRequest: CreateScanRequest): Promise<ScanRequestResponse> {
         const newScanId = uuidv4();
+        console.log(`[REQUEST] Received scan request ${newScanId}`)
 
         // Assing uids to probes
         const probes = scanRequest.probes.map((probe) => {
@@ -21,6 +22,7 @@ export default class ScanService implements IScanService {
         })
 
         // Save start data in supabase
+        console.log('[REQUEST] Saving scan start data...')
         await this.scanStorage.saveScanStartData({
             id: newScanId,
             status: ScanStatus.PENDING,
@@ -28,14 +30,19 @@ export default class ScanService implements IScanService {
             target: scanRequest.target,
             periodicity: scanRequest.periodicity
         })
+        console.log('[REQUEST] Scan start data saved !')
 
+        console.log('[REQUEST] Saving probe start data...')
         await this.scanStorage.saveProbesStartData(probes.map((probe) => ({
             id: probe.uid,
             status: ProbeStatus.PENDING,
             scanId: newScanId,
         })))
+        console.log('[REQUEST] Probe start data saved !')
 
-        this.messageQueue.publishProbeRequest(probes.map((probe) => ({
+
+        console.log('[REQUEST] Publishing request to Queue...')
+        await this.messageQueue.publishProbeRequest(probes.map((probe) => ({
             context: {
                 id: probe.uid,
                 name: probe.name,
@@ -43,6 +50,7 @@ export default class ScanService implements IScanService {
             },
             settings: probe.settings
         })));
+        console.log('[REQUEST] Published request to Queue !')
 
         return { scanId: newScanId };
     }

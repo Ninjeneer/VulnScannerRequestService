@@ -1,9 +1,5 @@
-FROM node:alpine as builder
+FROM node:alpine as dev
 
-COPY --chown=node:node package*.json .
-RUN npm ci
-COPY --chown=node:node . .
-
-FROM builder as dev
+WORKDIR /app
 EXPOSE 3000
-CMD [ "npm", "run", "dev" ]
+CMD [ "yarn", "dev" ]
