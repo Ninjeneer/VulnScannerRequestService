@@ -9,6 +9,18 @@ services:
       
     image: vuln-request-service
     ports:
-      - 3001:3000
+      - 3000
     volumes:
      - .:/app
+
+  report-service:
+    build:
+      dockerfile: ../VulnScannerReportService/Dockerfile
+      target: dev
+      context: ../VulnScannerReportService
+    
+    image: vuln-report-service
+    ports:
+      - 3000
+    volumes:
+      - ../VulnScannerReportService:/app
