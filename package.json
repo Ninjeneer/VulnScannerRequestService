@@ -7,6 +7,7 @@
     "dev": "nodemon src/index.ts",
     "dev:docker": "docker-compose -f docker-compose.yml up",
     "dev:docker-down": "docker-compose -f docker-compose.yml down",
+    "build": "swc src -d dist/src",
     "test": "jest test"
   },
   "author": "",

@@ -3,7 +3,7 @@ version: '3.8'
 services:
   request-service:
     build:
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.dev
       target: dev
       context: ./
       
@@ -15,7 +15,7 @@ services:
 
   report-service:
     build:
-      dockerfile: ../VulnScannerReportService/Dockerfile
+      dockerfile: ../VulnScannerReportService/Dockerfile.dev
       target: dev
       context: ../VulnScannerReportService
     
