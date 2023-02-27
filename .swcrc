@@ -4,7 +4,8 @@
         "parser": {
             "syntax": "typescript",
             "tsx": true,
-            "decorators": true
+            "decorators": true,
+            "type": "es6"
         }
     },
     "module": {
