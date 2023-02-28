@@ -1,4 +1,4 @@
-FROM node:alpine as builder
+FROM --platform=$PLATFORM node:alpine as builder
 WORKDIR /app
 COPY --chown=node:node package.json yarn.lock ./
 RUN yarn install --frozen-lockfile 
