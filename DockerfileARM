@@ -1,4 +1,10 @@
-FROM node:alpine as builder
+# Build stage
+FROM --platform=linux/arm64 node:alpine as builder
+RUN apk update
+RUN apk add make 
+RUN apk add g++ 
+RUN apk add py3-pip
+
 WORKDIR /app
 COPY --chown=node:node package.json yarn.lock ./
 RUN yarn install --frozen-lockfile 
