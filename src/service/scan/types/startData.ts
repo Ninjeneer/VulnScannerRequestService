@@ -4,6 +4,7 @@ export type ScanStartData = {
     notification: boolean;
     target: string;
     periodicity: string;
+    user_id: string;
 }
 
 export type ProbeStartData = {

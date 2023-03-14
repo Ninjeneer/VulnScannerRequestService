@@ -28,7 +28,8 @@ export default class ScanService implements IScanService {
             status: ScanStatus.PENDING,
             notification: false,
             target: scanRequest.target,
-            periodicity: scanRequest.periodicity
+            periodicity: scanRequest.periodicity,
+            user_id: scanRequest.user_id
         })
         console.log(`[REQUEST][${newScanId}] Scan start data saved !`)
 
