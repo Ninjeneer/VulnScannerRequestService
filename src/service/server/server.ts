@@ -3,8 +3,7 @@ import cors from '@fastify/cors';
 
 import ScanService from "../scan/scanService";
 import { setupRoutes } from "./router";
-import { decode } from "jsonwebtoken";
-import { UserToken } from "../../models/user";
+import { authMiddleware } from "./middlewares/authMiddleware";
 
 export default class Server {
     private fastify: FastifyInstance;
@@ -14,19 +13,7 @@ export default class Server {
         this.fastify.register(cors, {
             origin: '*'
         });
-        this.fastify.addHook('onRequest', (req, res, next) => {
-            if (req.headers.authorization) {
-                try {
-                    const decodedJwt = decode(req.headers.authorization)
-                    req.user = decodedJwt as UserToken
-                    next()
-                } catch (e) {
-                    console.warn('Failed to decode JWT token - aborting request')
-                }
-            } else {
-                next()
-            }
-        })
+        this.fastify.addHook('onRequest', authMiddleware)
         setupRoutes(this);
     }
 

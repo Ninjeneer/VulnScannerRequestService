@@ -1,12 +1,11 @@
 import { z } from "zod";
 import { createScanRequest } from "./requests/scanRequest";
 import Server from "./server";
-import jsonwebtoken from 'jsonwebtoken'
 
 export const setupRoutes = (server: Server) => {
     server.getFastify().post("/scans", async (req, res) => {
         try {
-            const scanRequest = createScanRequest.parse({ ...req.body as any, user_id: req.user.sub });
+            const scanRequest = createScanRequest.parse({ ...req.body as any, user_id: req.user.id });
             const scanId = await server.getScanService().requestScan(scanRequest);
             res.status(202).send({ scanId });
         } catch (e) {

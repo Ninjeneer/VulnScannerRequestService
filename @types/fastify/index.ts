@@ -1,8 +1,8 @@
-import { UserToken } from "../../src/models/user";
+import { User } from "@supabase/supabase-js";
 
 declare module 'fastify' {
     export interface FastifyRequest {
-        user?: UserToken
+        user?: User
     }
 }
 

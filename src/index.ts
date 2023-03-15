@@ -1,13 +1,14 @@
-import ScanService from "./service/scan/scanService";
-import Server from "./service/server/server";
-import SupabaseStorage from "./storage/scans/supabaseStorage";
 import { config as loadLocalEnv } from "dotenv";
-import AwsSqsQueue from "./storage/messagequeue/awsSqsQueue";
-import { requireEnvVars } from "./utils";
-
 if (process.env.NODE_ENV !== "production") {
     loadLocalEnv();
 }
+
+import ScanService from "./service/scan/scanService";
+import Server from "./service/server/server";
+import SupabaseStorage from "./storage/scans/supabaseStorage";
+import AwsSqsQueue from "./storage/messagequeue/awsSqsQueue";
+import { requireEnvVars } from "./utils";
+
 
 requireEnvVars([
     'AWS_DEFAULT_REGION',
