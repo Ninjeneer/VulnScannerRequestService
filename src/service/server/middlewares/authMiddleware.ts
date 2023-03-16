@@ -1,7 +1,7 @@
 import { FastifyRequest } from "fastify"
 import supabase from '../../../storage/supabase'
 
-export const authMiddleware = async (req: FastifyRequest, res, next) => {
+export const authMiddleware = async (req: FastifyRequest, res) => {
 	if (req.headers.authorization) {
 		try {
 			const userRequest = await supabase.auth.getUser(req.headers.authorization)
@@ -10,7 +10,6 @@ export const authMiddleware = async (req: FastifyRequest, res, next) => {
 			} else {
 				res.status(401).send()
 			}
-			next()
 		} catch (e) {
 			console.warn('Error during token check', e)
 			res.status(401).send()
