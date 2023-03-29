@@ -8,14 +8,6 @@ import { createReport } from "../../storage/report.storage"
 import { getScan, updateScan } from "../../storage/scan.storage"
 import { buildReport } from "./reportService"
 
-listenResultsQueue(async (resultMessage) => {
-    try {
-        await onProbeResult(resultMessage.probeId, resultMessage.objectId)
-    } catch (e) {
-        console.error('Failed to handle probe result !', e.message)
-    }
-})
-
 const onProbeResult = async (probeId: string, resultId: string): Promise<void> => {
     console.log(`[RESULT][${probeId}] Received result of probe ${probeId} with resultId ${resultId}`)
     const probe = await getProbe(probeId);
@@ -27,7 +19,7 @@ const onProbeResult = async (probeId: string, resultId: string): Promise<void> =
 
     const scan = await getScan(probe.scanId);
     if (!scan) {
-        throw new ScanDoesNotExist();
+        throw new ScanDoesNotExist(probe.scanId);
     }
     if (isScanFinished(scan)) {
         console.log(`[RESULT][${scan.id}] Scan ${scan.id} is finished`)
@@ -52,4 +44,14 @@ const onProbeResult = async (probeId: string, resultId: string): Promise<void> =
 
 const isScanFinished = (scan: ScanWithProbes): boolean => {
     return scan.probes.every((probe) => probe.status === ProbeStatus.FINISHED);
+}
+
+export const initResponsesQueue = () => {
+    listenResultsQueue(async (resultMessage) => {
+        try {
+            await onProbeResult(resultMessage.probeId, resultMessage.objectId)
+        } catch (e) {
+            console.error('Failed to handle probe result !', e.message)
+        }
+    })
 }

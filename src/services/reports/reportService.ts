@@ -16,12 +16,12 @@ export const getReportById = async (id: string): Promise<Report> => {
 export const buildReport = async (scanId: string): Promise<Report> => {
     const scan = await getScan(scanId)
     if (!scan) {
-        throw new ScanDoesNotExist();
+        throw new ScanDoesNotExist(scanId);
     }
 
     const probeResults = await getProbeResultsByScanId(scanId);
     if (!probeResults) {
-        throw new ScanDoesNotExist();
+        throw new ScanDoesNotExist(scanId);
     }
 
     // Get all the results from the database

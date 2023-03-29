@@ -1,6 +1,6 @@
 export class ScanDoesNotExist extends Error {
-    constructor() {
-        super('Scan does not exist')
+    constructor(id = "") {
+        super(`Scan ${id} does not exist`)
     }
 }
 

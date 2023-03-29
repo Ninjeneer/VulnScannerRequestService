@@ -15,7 +15,7 @@ const sqsClient = new AWS.SQS({ apiVersion: '2012-11-05' });
 export const publishProbeRequest = async (probeRequests: ProbeRequest[]): Promise<boolean> => {
     const res: AWS.SQS.SendMessageBatchResult = await new Promise((resolve, reject) => {
         sqsClient.sendMessageBatch({
-            QueueUrl: process.env.AWS_QUEUE_URL,
+            QueueUrl: process.env.AWS_QUEUE_REQUESTS_URL,
             Entries: probeRequests.map((probeRequest) => ({
                 Id: probeRequest.context.id,
                 MessageBody: JSON.stringify(probeRequest),
@@ -33,9 +33,10 @@ export const publishProbeRequest = async (probeRequests: ProbeRequest[]): Promis
 }
 
 export const listenResultsQueue = async (onMessageResult: Function): Promise<void> => {
+    console.log('[REPORT] Listening to AWS SQS Queue')
     setInterval(() => {
         sqsClient.receiveMessage({
-            QueueUrl: process.env.AWS_QUEUE_URL,
+            QueueUrl: process.env.AWS_QUEUE_RESPONSES_URL,
 
         }, async (err, message) => {
             if (err) {
@@ -56,7 +57,7 @@ export const listenResultsQueue = async (onMessageResult: Function): Promise<voi
 
 export const deleteMessagesFromQueue = async (messages: AWS.SQS.Message[]): Promise<void> => {
     const res = await sqsClient.deleteMessageBatch({
-        QueueUrl: process.env.AWS_QUEUE_URL,
+        QueueUrl: process.env.AWS_QUEUE_RESPONSES_URL,
         Entries: messages.map((msg) => ({ Id: msg.MessageId, ReceiptHandle: msg.ReceiptHandle }))
     }).promise()
 

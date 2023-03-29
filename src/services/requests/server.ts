@@ -18,7 +18,7 @@ requireEnvVars([
     'AWS_DEFAULT_REGION',
     'AWS_ACCESS_KEY',
     'AWS_SECRET_KEY',
-    'AWS_QUEUE_URL',
+    'AWS_QUEUE_REQUESTS_URL',
     'SUPABASE_URL',
     'SUPABASE_KEY',
     'SERVER_PORT'

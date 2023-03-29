@@ -8,6 +8,7 @@ import { ReportDoesNotExist } from "../../exceptions/exceptions";
 import { getReportById } from "./reportService";
 import { getReportByIdRequest } from "./validators/reportRequests";
 import { connect } from "mongoose";
+import { initResponsesQueue } from "./probeResultService";
 if (process.env.NODE_ENV !== "production") {
     loadLocalEnv();
 }
@@ -17,7 +18,7 @@ requireEnvVars([
     'AWS_DEFAULT_REGION',
     'AWS_ACCESS_KEY',
     'AWS_SECRET_KEY',
-    'AWS_QUEUE_URL',
+    'AWS_QUEUE_RESPONSES_URL',
     'SUPABASE_URL',
     'SUPABASE_KEY',
     'SERVER_PORT',
@@ -44,6 +45,8 @@ try {
 
 
 const startServer = () => {
+    initResponsesQueue()
+    
     const server = fastify();
 
     server.register(cors, {
