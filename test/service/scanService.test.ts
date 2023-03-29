@@ -1,7 +1,7 @@
-import IScanService from "../../src/service/scan/interfaces/scanServiceInterface"
-import ScanService from "../../src/service/scan/scanService";
-import { ScanStatus } from "../../src/service/scan/types/startData";
-import { createScanRequest, CreateScanRequest } from "../../src/service/server/requests/scanRequest";
+import IScanService from "../../src/services/scan/interfaces/scanServiceInterface"
+import ScanService from "../../src/services/scan/scanService";
+import { ScanStatus } from "../../src/services/scan/types/startData";
+import { createScanRequest, CreateScanRequest } from "../../src/services/requests/validators/scanRequest";
 import AwsSqsQueue from "../../src/storage/messagequeue/awsSqsQueue";
 import SupabaseStorage from "../../src/storage/scans/supabaseStorage";
 

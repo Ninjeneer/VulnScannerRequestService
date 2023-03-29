@@ -1,5 +1,6 @@
-export enum PROBES_NAMES {
-    PROBE_NMAP = 'probe-nmap'
+export enum PROBE_NAMES {
+    PROBE_NMAP = 'probe-nmap',
+    PROBE_DUMMY = 'probe-dummy',
 }
 
 export const requireEnvVars = (vars: string[]) => {

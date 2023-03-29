@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify"
-import supabase from '../../../storage/supabase'
+import supabase from '../../storage/supabase'
 
 export const authMiddleware = async (req: FastifyRequest, res) => {
 	if (req.headers.authorization) {

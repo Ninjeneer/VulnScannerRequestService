@@ -1,16 +1,12 @@
+import { ProbeStartData } from "./probe";
+
 export type ScanStartData = {
     id: string;
-    status: string;
+    status: ScanStatus;
     notification: boolean;
     target: string;
     periodicity: string;
     userId: string;
-}
-
-export type ProbeStartData = {
-    id: string;
-    status: ProbeStatus;
-    scanId: string;
 }
 
 export enum ScanStatus {
@@ -19,8 +15,10 @@ export enum ScanStatus {
     FINISHED = 'FINISHED',
 }
 
-export enum ProbeStatus {
-    PENDING = 'PENDING',
-    RUNNING = 'RUNNING',
-    FINISHED = 'FINISHED',
+export type ScanRequestResponse = {
+    scanId: string;
+}
+
+export type ScanWithProbes = ScanStartData & {
+    probes: ProbeStartData[];
 }
