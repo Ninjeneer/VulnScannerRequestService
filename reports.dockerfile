@@ -3,6 +3,7 @@ WORKDIR /app
 COPY --chown=node:node package.json yarn.lock ./
 RUN yarn install --frozen-lockfile 
 COPY --chown=node:node . .
+RUN yarn build
 
 
 # Dev stage
@@ -14,7 +15,6 @@ CMD ["yarn", "dev:reports"]
 
 # Prod stage
 FROM node:alpine as prod
-RUN yarn build
 WORKDIR /app
 COPY --from=builder /app/node_modules ./dist/node_modules
 COPY --from=builder /app/dist/src ./dist/src

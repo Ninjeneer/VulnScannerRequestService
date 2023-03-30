@@ -3,7 +3,7 @@ version: '3.8'
 services:
   request-service:
     build:
-      dockerfile: ./src/services/requests/Dockerfile
+      dockerfile: ./requests.dockerfile
       target: dev
       context: ./
       
@@ -17,7 +17,7 @@ services:
 
   report-service:
     build:
-      dockerfile: ./src/services/reports/Dockerfile
+      dockerfile: ./reports.dockerfile
       target: dev
       context: ./
     
