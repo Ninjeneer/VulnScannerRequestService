@@ -1014,10 +1014,10 @@ avvio@^8.2.0:
     debug "^4.0.0"
     fastq "^1.6.1"
 
-aws-sdk@^2.1272.0:
-  version "2.1282.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1282.0.tgz#7c0d64f5e42d751d9077f346136e6f59b9fc13f2"
-  integrity sha512-xH9oPE0Ggk1Q667byhStbutLYm528d/yCq81kvuU7t24Ijvx7tNMjai77x/QojDl8wEznzsguAwCEdj+aTcFbg==
+aws-sdk@^2.1353.0:
+  version "2.1353.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1353.0.tgz#0fdbef8532c7ca152ad5a74632c680b6e79205a6"
+  integrity sha512-IEzWRxeecNYwUEvHVvYlE9Q85VF1uytzL0SeZp67xl9BQHAhwPVMZyTqqxUq3z4A/8iDUteZe/o0DIJhttoeTg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
