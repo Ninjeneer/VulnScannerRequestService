@@ -15,5 +15,9 @@ export const getProbe = async (probeId: string): Promise<ProbeStartData> => {
 }
 
 export const getProbeResultsByScanId = async (scanId: string): Promise<SupabaseProbeResult[]> => {
-    return (await supabaseClient.from('probes_results').select('*, probes(*, scans(*))').eq('probes.scans.id', scanId)).data as SupabaseProbeResult[]
+    return (await supabaseClient
+        .from('probes_results')
+        .select('*, probes!inner(*, scans!inner(*))')
+        .eq('probes.scans.id', scanId)
+    ).data as SupabaseProbeResult[]
 }
