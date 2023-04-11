@@ -2,9 +2,8 @@
     "recommendations": [
         "dbaeumer.vscode-eslint",
         "visualstudioexptteam.vscodeintellicode",
-        "ms-vscode.vscode-typescript-next",
         "orta.vscode-jest",
-        "christian-kohler.npm-intellisense",
-        "hbenl.vscode-test-explorer"
+        "hbenl.vscode-test-explorer",
+        "ms-vscode.vscode-typescript-next"
     ]
 }

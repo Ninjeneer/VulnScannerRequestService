@@ -1,30 +1,15 @@
-import IScanService from "../../src/services/scan/interfaces/scanServiceInterface"
-import ScanService from "../../src/services/scan/scanService";
-import { ScanStatus } from "../../src/services/scan/types/startData";
 import { createScanRequest, CreateScanRequest } from "../../src/services/requests/validators/scanRequest";
-import AwsSqsQueue from "../../src/storage/messagequeue/awsSqsQueue";
-import SupabaseStorage from "../../src/storage/scans/supabaseStorage";
+import { ScanStatus } from '../../src/models/scan'
+import { requestScan } from "../../src/services/requests/scanService";
+import { saveScanStartData, saveProbesStartData } from "../../src/storage/scan.storage";
+import { publishProbeRequest } from "../../src/storage/awsSqsQueue";
 
-jest.mock('../../src/storage/scans/supabaseStorage.ts')
-jest.mock('../../src/storage/messagequeue/awsSqsQueue.ts')
+
+jest.mock('../../src/storage/scan.storage')
+jest.mock('../../src/storage/awsSqsQueue')
+
 
 describe('Scan Service Tests', () => {
-    let scanService: IScanService;
-    let supabaseStorage: SupabaseStorage;
-    let awsSqsQueue: AwsSqsQueue;
-
-    let spySaveScanStartData: jest.SpyInstance;
-    let spySaveProbeStartData: jest.SpyInstance;
-    let spyPublishProbeRequest: jest.SpyInstance;
-
-    beforeEach(() => {
-        supabaseStorage = new SupabaseStorage();
-        awsSqsQueue = new AwsSqsQueue();
-        scanService = new ScanService(supabaseStorage, awsSqsQueue);
-        spySaveScanStartData = jest.spyOn(supabaseStorage, 'saveScanStartData');
-        spySaveProbeStartData = jest.spyOn(supabaseStorage, 'saveProbesStartData');
-        spyPublishProbeRequest = jest.spyOn(awsSqsQueue, 'publishProbeRequest');
-    })
 
     it('should request a scan', async () => {
         const scanRequest: CreateScanRequest = {
@@ -34,23 +19,23 @@ describe('Scan Service Tests', () => {
                 { name: 'probe-nmap', settings: {} } 
             ]
         }
-        const response = await scanService.requestScan(scanRequest);
+        const response = await requestScan(scanRequest);
         expect(response.scanId).toBeDefined()
-        expect(spySaveScanStartData).toHaveBeenCalledWith({
+        expect(saveScanStartData).toHaveBeenCalledWith({
             id: response.scanId,
             status: ScanStatus.PENDING,
             notification: false,
             target: scanRequest.target,
             periodicity: '* * * * *'
         });
-        expect(spySaveProbeStartData).toHaveBeenCalledWith([
+        expect(saveProbesStartData).toHaveBeenCalledWith([
             {
                 id: expect.any(String),
                 status: ScanStatus.PENDING,
                 scanId: response.scanId
             }
         ]);
-        expect(spyPublishProbeRequest).toHaveBeenCalledWith([{
+        expect(publishProbeRequest).toHaveBeenCalledWith([{
             context: {
                 id: expect.any(String),
                 name: 'probe-nmap',

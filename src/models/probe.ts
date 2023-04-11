@@ -25,12 +25,12 @@ export type SupabaseProbeResult = {
     resultId: string;
 }
 
-export type ProbeResult = {
+export type ProbeResult<T = any> = {
     context: {
         timestampStart: number;
         timestampStop: number;
         probeUid: string;
         probeName: string;
     };
-    result: any;
+    result: T;
 }
