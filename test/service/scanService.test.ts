@@ -4,7 +4,7 @@ import { requestScan } from "../../src/services/requests/scanService";
 import { saveScanStartData, saveProbesStartData } from "../../src/storage/scan.storage";
 import { publishProbeRequest } from "../../src/storage/awsSqsQueue";
 
-
+jest.mock('../../src/storage/supabase', () => ({ supabaseClient: null }))
 jest.mock('../../src/storage/scan.storage')
 jest.mock('../../src/storage/awsSqsQueue')
 
