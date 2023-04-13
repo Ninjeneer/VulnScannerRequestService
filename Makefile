@@ -4,6 +4,9 @@ DOCKER_COMPOSE_FILE_DB=docker-compose-db.yml
 dev:
 	docker-compose -f ${DOCKER_COMPOSE_FILE} up
 
+dev-down:
+	docker-compose -f ${DOCKER_COMPOSE_FILE} down
+
 build:
 	docker-compose -f ${DOCKER_COMPOSE_FILE} build
 
