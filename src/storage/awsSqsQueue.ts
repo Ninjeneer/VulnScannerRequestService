@@ -45,14 +45,17 @@ export const listenResultsQueue = async (onMessageResult: Function): Promise<voi
             }
             if (message?.Messages?.length > 0) {
                 try {
-                    message.Messages.forEach((msg) => onMessageResult(JSON.parse(msg.Body)))
-                    await deleteMessagesFromQueue(message.Messages)
+                    message.Messages.forEach((msg) => onMessageResult(JSON.parse(msg.Body), msg))
                 } catch (e) {
                     console.error(e)
                 }
             }
         })
     }, 2000)
+}
+
+export const deleteMessageFromQueue = async (message: AWS.SQS.Message): Promise<void> => {
+    await deleteMessagesFromQueue([message])
 }
 
 export const deleteMessagesFromQueue = async (messages: AWS.SQS.Message[]): Promise<void> => {

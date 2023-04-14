@@ -1,14 +1,14 @@
 import { ProbeDoesNotExist, ScanDoesNotExist } from "../../exceptions/exceptions"
 import { ProbeStatus } from "../../models/probe"
 import { ScanStatus, ScanWithProbes } from "../../models/scan"
-import { listenResultsQueue } from "../../storage/awsSqsQueue"
+import { deleteMessageFromQueue, deleteMessagesFromQueue, listenResultsQueue } from "../../storage/awsSqsQueue"
 import { saveReport } from "../../storage/mongo/mongoReport.storage"
 import { getProbe, updateProbe, createProbeResult } from "../../storage/probe.storage"
 import { createReport } from "../../storage/report.storage"
 import { getScan, updateScan } from "../../storage/scan.storage"
 import { buildReport } from "./reportService"
 
-const onProbeResult = async (probeId: string, resultId: string): Promise<void> => {
+const onProbeResult = async (probeId: string, resultId: string): Promise<boolean> => {
     console.log(`[RESULT][${probeId}] Received result of probe ${probeId} with resultId ${resultId}`)
     const probe = await getProbe(probeId);
     if (!probe) {
@@ -38,8 +38,8 @@ const onProbeResult = async (probeId: string, resultId: string): Promise<void> =
             lastReportId: savedReport.id
         })
         console.log(`[REPORT][${scan.id}] Created report !`)
-
     }
+    return true
 }
 
 const isScanFinished = (scan: ScanWithProbes): boolean => {
@@ -47,9 +47,12 @@ const isScanFinished = (scan: ScanWithProbes): boolean => {
 }
 
 export const initResponsesQueue = () => {
-    listenResultsQueue(async (resultMessage) => {
+    listenResultsQueue(async (resultMessage, rawMessage) => {
         try {
-            await onProbeResult(resultMessage.probeId, resultMessage.objectId)
+            if (await onProbeResult(resultMessage.probeId, resultMessage.objectId)) {
+                await deleteMessageFromQueue(rawMessage)
+                console.log(`[RESULT] Removed result of probe ${resultMessage.probeId} from queue`)
+            }
         } catch (e) {
             console.error('Failed to handle probe result !', e.message)
         }
