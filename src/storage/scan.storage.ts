@@ -1,10 +1,10 @@
-import { ProbeStartData } from '../models/probe'
+import { Probe } from '../models/probe'
 import { ScanStartData, ScanWithProbes } from '../models/scan'
 import { ScanUpdatePayload } from './dto/scan.dto'
 import supabaseClient from './supabase'
 
 
-export const saveProbesStartData = async (probes: ProbeStartData[]) => {
+export const saveProbesStartData = async (probes: Probe[]) => {
     await supabaseClient.from('probes').insert(probes)
 }
 

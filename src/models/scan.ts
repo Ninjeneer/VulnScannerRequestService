@@ -1,4 +1,4 @@
-import { ProbeStartData } from "./probe";
+import { Probe } from "./probe";
 
 export type ScanStartData = {
     id: string;
@@ -20,5 +20,5 @@ export type ScanRequestResponse = {
 }
 
 export type ScanWithProbes = ScanStartData & {
-    probes: ProbeStartData[];
+    probes: Probe[];
 }

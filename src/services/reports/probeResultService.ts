@@ -1,12 +1,28 @@
 import { ProbeDoesNotExist, ScanDoesNotExist } from "../../exceptions/exceptions"
-import { ProbeStatus } from "../../models/probe"
+import { Probe, ProbeStatus } from "../../models/probe"
 import { ScanStatus, ScanWithProbes } from "../../models/scan"
 import { deleteMessageFromQueue, deleteMessagesFromQueue, listenResultsQueue } from "../../storage/awsSqsQueue"
 import { saveReport } from "../../storage/mongo/mongoReport.storage"
-import { getProbe, updateProbe, createProbeResult } from "../../storage/probe.storage"
+import { getProbe, updateProbe, createProbeResult, listenProbes } from "../../storage/probe.storage"
 import { createReport } from "../../storage/report.storage"
 import { getScan, updateScan } from "../../storage/scan.storage"
+import supabaseClient from "../../storage/supabase"
 import { buildReport } from "./reportService"
+
+const onProbeStart = async (probe: Probe) => {
+    if (!probe) {
+        console.error('[REPORT][PROBE START] Probe is missing')
+        return
+    }
+
+    const scan = await getScan(probe.scanId)
+    if (!scan) {
+        console.error(`[REPORT][PROBE START] Scan ${probe.scanId} of probe ${probe.id} does not exist`)
+        return
+    }
+
+    await updateScan(scan.id, { status: ScanStatus.RUNNING })
+}
 
 const onProbeResult = async (probeId: string, resultId: string): Promise<boolean> => {
     console.log(`[RESULT][${probeId}] Received result of probe ${probeId} with resultId ${resultId}`)
@@ -58,3 +74,15 @@ export const initResponsesQueue = () => {
         }
     })
 }
+
+export const initProbeListening = () => {
+    console.log('[REPORT][PROBES] Listening to realtime changes')
+    listenProbes((change) => {
+        if (change.eventType === 'UPDATE' && change.new.status === ProbeStatus.RUNNING) {
+            // No 100% sure the probe is starting
+            onProbeStart(change.new)
+        }
+    })
+}
+
+initProbeListening()

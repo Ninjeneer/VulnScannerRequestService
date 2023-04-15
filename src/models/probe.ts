@@ -1,4 +1,4 @@
-export type ProbeStartData = {
+export type Probe = {
     id: string;
     status: ProbeStatus;
     scanId: string;
