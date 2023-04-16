@@ -11,7 +11,13 @@ export class ProbeDoesNotExist extends Error {
 }
 
 export class ReportDoesNotExist extends Error {
-    constructor() {
-        super('Report does not exist')
+    constructor(id = "") {
+        super(`Report ${id} does not exist`)
+    }
+}
+
+export class NoProbeResultsForReport extends Error {
+    constructor(id = "") {
+        super(`No probe results for report ${id} found`)
     }
 }

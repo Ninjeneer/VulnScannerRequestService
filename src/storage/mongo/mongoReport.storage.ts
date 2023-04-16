@@ -18,3 +18,7 @@ export const saveReport = async (report: Report): Promise<string> => {
 export const getReportById = async (id: string): Promise<Report> => {
     return ReportModel.findById(id)
 }
+
+export const updateReport = async (reportId: string, report: Report): Promise<Report> => {
+    return (await ReportModel.findByIdAndUpdate(reportId, report)).toObject()
+}

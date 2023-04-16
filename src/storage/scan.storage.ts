@@ -1,5 +1,5 @@
 import { Probe } from '../models/probe'
-import { ScanStartData, ScanWithProbes } from '../models/scan'
+import { Scan, ScanWithProbes } from '../models/scan'
 import { ScanUpdatePayload } from './dto/scan.dto'
 import supabaseClient from './supabase'
 
@@ -8,9 +8,9 @@ export const saveProbesStartData = async (probes: Probe[]) => {
     await supabaseClient.from('probes').insert(probes)
 }
 
-export const saveScanStartData = async (scan: ScanStartData): Promise<{ scanId: string }> => {
-    await supabaseClient.from('scans').insert(scan)
-    return { scanId: scan.id }
+export const saveScanStartData = async (scan: Scan): Promise<Scan> => {
+    const newScan = (await supabaseClient.from('scans').insert(scan).select()).data
+    return scan
 }
 
 export const getScan = async (scanId: string): Promise<ScanWithProbes> => {

@@ -4,4 +4,5 @@ export type ScanUpdatePayload = {
     status: ScanStatus,
     notification: boolean
     lastReportId?: string;
+    currentReportId?: string
 }

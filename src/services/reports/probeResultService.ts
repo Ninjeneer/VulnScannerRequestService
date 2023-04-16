@@ -4,9 +4,8 @@ import { ScanStatus, ScanWithProbes } from "../../models/scan"
 import { deleteMessageFromQueue, deleteMessagesFromQueue, listenResultsQueue } from "../../storage/awsSqsQueue"
 import { saveReport } from "../../storage/mongo/mongoReport.storage"
 import { getProbe, updateProbe, createProbeResult, listenProbes } from "../../storage/probe.storage"
-import { createReport } from "../../storage/report.storage"
+import { createReport, updateReport } from "../../storage/report.storage"
 import { getScan, updateScan } from "../../storage/scan.storage"
-import supabaseClient from "../../storage/supabase"
 import { buildReport } from "./reportService"
 
 const onProbeStart = async (probe: Probe) => {
@@ -41,17 +40,19 @@ const onProbeResult = async (probeId: string, resultId: string): Promise<boolean
         console.log(`[RESULT][${scan.id}] Scan ${scan.id} is finished`)
 
         console.log(`[REPORT][${scan.id}] Building report`)
-        const report = await buildReport(scan.id);
+        const report = await buildReport(scan.currentReportId);
         console.log(`[REPORT][${scan.id}] Saving report...`)
         const reportId = await saveReport(report)
         console.log(`[REPORT][MONGO][${scan.id}] Report ${reportId} saved !`)
 
         console.log(`[REPORT][${scan.id}] Creating report entry into Supabase...`)
-        const savedReport = await createReport({ reportId, scanId: scan.id, userId: scan.userId })
+        const savedReport = await updateReport(scan.currentReportId, { reportId })
+        console.log({ savedReport })
         await updateScan(scan.id, {
             status: ScanStatus.FINISHED,
             notification: true,
-            lastReportId: savedReport.id
+            lastReportId: savedReport.id,
+            currentReportId: null
         })
         console.log(`[REPORT][${scan.id}] Created report !`)
     }
@@ -70,7 +71,7 @@ export const initResponsesQueue = () => {
                 console.log(`[RESULT] Removed result of probe ${resultMessage.probeId} from queue`)
             }
         } catch (e) {
-            console.error('Failed to handle probe result !', e.message)
+            console.error('Failed to handle probe result !', e.stack)
         }
     })
 }

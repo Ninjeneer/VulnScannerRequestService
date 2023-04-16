@@ -1,12 +1,13 @@
 import { Probe } from "./probe";
 
-export type ScanStartData = {
+export type Scan = {
     id: string;
     status: ScanStatus;
     notification: boolean;
     target: string;
     periodicity: string;
     userId: string;
+    currentReportId?: string
 }
 
 export enum ScanStatus {
@@ -19,6 +20,6 @@ export type ScanRequestResponse = {
     scanId: string;
 }
 
-export type ScanWithProbes = ScanStartData & {
+export type ScanWithProbes = Scan & {
     probes: Probe[];
 }

@@ -5,8 +5,8 @@ import { ZodError } from 'zod'
 import { config as loadLocalEnv } from "dotenv";
 import { requireEnvVars } from "../../utils";
 import { ReportDoesNotExist } from "../../exceptions/exceptions";
-import { getReportById } from "./reportService";
-import { getReportByIdRequest } from "./validators/reportRequests";
+import { getMongoReportById, rebuildReport } from "./reportService";
+import { getReportByIdRequest, getSupabaseReportByIdRequest } from "./validators/reportRequests";
 import { connect } from "mongoose";
 import { initResponsesQueue } from "./probeResultService";
 if (process.env.NODE_ENV !== "production") {
@@ -62,8 +62,24 @@ const startServer = () => {
     server.get("/reports/:id", async (req, res) => {
         try {
             const reportId = getReportByIdRequest.parse(req.params['id']);
-            const report = await getReportById(reportId);
+            const report = await getMongoReportById(reportId);
             res.status(200).send(report);
+        } catch (e) {
+            if (e instanceof ReportDoesNotExist) {
+                res.status(404).send(e.message)
+            } else if (e instanceof ZodError) {
+                res.status(400).send('Invalid ID')
+            } else {
+                res.status(500).send(e);
+            }
+        }
+    })
+
+    server.post("/reports/:id/rebuild", async (req, res) => {
+        try {
+            const reportId = getSupabaseReportByIdRequest.parse(req.params['id']);
+            await rebuildReport(reportId)
+            res.status(200).send();
         } catch (e) {
             if (e instanceof ReportDoesNotExist) {
                 res.status(404).send(e.message)

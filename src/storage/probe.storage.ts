@@ -15,11 +15,19 @@ export const getProbe = async (probeId: string): Promise<Probe> => {
     return (await supabaseClient.from('probes').select('*').eq('id', probeId).single()).data as Probe
 }
 
-export const getProbeResultsByScanId = async (scanId: string): Promise<SupabaseProbeResult[]> => {
+export const getProbeResultsByCurrentReportId = async (reportId: string): Promise<SupabaseProbeResult[]> => {
     return (await supabaseClient
         .from('probes_results')
         .select('*, probes!inner(*, scans!inner(*))')
-        .eq('probes.scans.id', scanId)
+        .eq('probes.scans.currentReportId', reportId)
+    ).data as SupabaseProbeResult[]
+}
+
+export const getProbeResultsByLastReportId = async (reportId: string): Promise<SupabaseProbeResult[]> => {
+    return (await supabaseClient
+        .from('probes_results')
+        .select('*, probes!inner(*, scans!inner(*))')
+        .eq('probes.scans.lastReportId', reportId)
     ).data as SupabaseProbeResult[]
 }
 

@@ -1,6 +1,7 @@
 import { ProbeResult } from "./probe";
 
 export type Report = {
+    id?: string
     nbProbes: number;
     totalTime: number;
     target: string;

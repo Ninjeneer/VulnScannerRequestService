@@ -14,9 +14,9 @@ const ProbeResultSchema = new Schema<ProbeResult>({
 const ProbeResultModel = mongoose.model<ProbeResult>('ProbeResult', ProbeResultSchema, 'probe_results');
 
 export const getResultsByIds = async (ids: string[]): Promise<ProbeResult[]> => {
-    return ProbeResultModel.find({ '_id': { $in: ids } })
+    return (await ProbeResultModel.find({ '_id': { $in: ids } })).map((res) => res.toObject())
 }
 
 export const getResultById = async (id: string): Promise<ProbeResult> => {
-    return ProbeResultModel.findById(id);
+    return (await ProbeResultModel.findById(id)).toObject();
 }
