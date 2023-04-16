@@ -11,3 +11,6 @@ export const createScanRequest = z.object({
 })
 
 export type CreateScanRequest = z.infer<typeof createScanRequest>
+
+export const updateScanRequest = createScanRequest.deepPartial()
+export type UpdateScanRequest = z.infer<typeof updateScanRequest>

@@ -47,7 +47,6 @@ const onProbeResult = async (probeId: string, resultId: string): Promise<boolean
 
         console.log(`[REPORT][${scan.id}] Creating report entry into Supabase...`)
         const savedReport = await updateReport(scan.currentReportId, { reportId })
-        console.log({ savedReport })
         await updateScan(scan.id, {
             status: ScanStatus.FINISHED,
             notification: true,
