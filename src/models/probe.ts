@@ -2,6 +2,7 @@ export type Probe = {
     id: string;
     status: ProbeStatus;
     scanId: string;
+    name: string
 }
 
 export enum ProbeStatus {

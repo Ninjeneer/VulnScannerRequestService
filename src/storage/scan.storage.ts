@@ -17,6 +17,10 @@ export const getScan = async (scanId: string): Promise<ScanWithProbes> => {
     return (await supabaseClient.from('scans').select('*, probes(*)').eq('id', scanId).single()).data as ScanWithProbes
 }
 
-export const updateScan = async (id: string, data: Partial<ScanUpdatePayload>): Promise<void> => {
-    await supabaseClient.from('scans').update(data).eq('id', id)
+export const updateScan = async (id: string, data: Partial<ScanUpdatePayload>): Promise<Scan> => {
+    const res = await supabaseClient.from('scans').update(data).eq('id', id).select().single()
+    if (res.error) {
+        console.log(res.error)
+    }
+    return res.data
 }
