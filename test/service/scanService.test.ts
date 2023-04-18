@@ -3,15 +3,9 @@ import { ScanStatus } from '../../src/models/scan'
 import { requestScan } from "../../src/services/requests/scanService";
 import { saveProbesStartData, saveScanStartData } from "../../src/storage/scan.storage";
 import { publishProbeRequest } from "../../src/storage/awsSqsQueue";
-import { createReport } from "../../src/storage/report.storage";
 
 jest.mock('../../src/storage/supabase', () => ({ supabaseClient: null }))
 jest.mock('../../src/storage/scan.storage')
-    // jest.mock('../../src/storage/scan.storage', () => ({
-//     saveScanStartData: (scan) => scan,
-//     updateScan: (id, scan) => scan,
-//     saveProbesStartData: (probesStartData) => probesStartData
-// }))
 jest.mock('../../src/storage/report.storage', () => ({
     createReport: () => ({ id: 'report_id' }),
 }))
@@ -19,8 +13,6 @@ jest.mock('../../src/storage/awsSqsQueue')
 
 
 const spySaveScanStartData = jest.spyOn({ saveScanStartData }, 'saveScanStartData').mockImplementation(async (scan) => scan)
-// const spySaveScanStartData = jest.spyOn({ saveScanStartData }, 'saveScanStartData')
-
 
 describe('Scan Service Tests', () => {
 
@@ -45,7 +37,8 @@ describe('Scan Service Tests', () => {
             {
                 id: expect.any(String),
                 status: ScanStatus.PENDING,
-                scanId: response.scanId
+                scanId: response.scanId,
+                name: 'probe-nmap'
             }
         ]);
         expect(publishProbeRequest).toHaveBeenCalledWith([{
