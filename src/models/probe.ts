@@ -3,6 +3,7 @@ export type Probe = {
     status: ProbeStatus;
     scanId: string;
     name: string
+    settings: Record<string, any>
 }
 
 export enum ProbeStatus {

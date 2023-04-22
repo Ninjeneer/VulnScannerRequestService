@@ -7,7 +7,7 @@ services:
       target: dev
       context: ./
       
-    image: ninjeneer/vuln-request-service
+    image: ninjeneer/vuln-scanner-request-service
     ports:
       - 3000:3000
     volumes:
@@ -21,9 +21,21 @@ services:
       target: dev
       context: ./
     
-    image: ninjeneer/vuln-report-service
+    image: ninjeneer/vuln-scanner-report-service
     ports:
       - 3001:3000
+    volumes:
+      - .:/app
+    networks:
+      - vulnscanner
+
+  jobs-service:
+    build:
+      dockerfile: ./jobs.dockerfile
+      target: dev
+      context: ./
+    
+    image: ninjeneer/vuln-scanner-jobs-service
     volumes:
       - .:/app
     networks:

@@ -7,4 +7,5 @@ export type ProbeUpdatePayload = {
 export type ProbeResultPayload = {
     probeId: string;
     resultId: string;
+    reportId: string;
 }

@@ -7,6 +7,10 @@ export const updateProbe = async (id: string, data: ProbeUpdatePayload): Promise
     await supabaseClient.from('probes').update({ status: data.status }).eq('id', id)
 }
 
+export const updateProbesByScanId = async (scanId: string, payload: Partial<Probe>) => {
+    await supabaseClient.from('probes').update(payload).eq('scanId', scanId)
+}
+
 export const createProbeResult = async (data: ProbeResultPayload): Promise<SupabaseProbeResult> => {
     return (await supabaseClient.from('probes_results').insert(data).select().single()).data
 }
@@ -24,19 +28,11 @@ export const getProbe = async (probeId: string): Promise<Probe> => {
     return (await supabaseClient.from('probes').select('*').eq('id', probeId).single()).data as Probe
 }
 
-export const getProbeResultsByCurrentReportId = async (reportId: string): Promise<SupabaseProbeResult[]> => {
+export const getProbeResultsByReportId = async (reportId: string): Promise<SupabaseProbeResult[]> => {
     return (await supabaseClient
         .from('probes_results')
-        .select('*, probes!inner(*, scans!inner(*))')
-        .eq('probes.scans.currentReportId', reportId)
-    ).data as SupabaseProbeResult[]
-}
-
-export const getProbeResultsByLastReportId = async (reportId: string): Promise<SupabaseProbeResult[]> => {
-    return (await supabaseClient
-        .from('probes_results')
-        .select('*, probes!inner(*, scans!inner(*))')
-        .eq('probes.scans.lastReportId', reportId)
+        .select('*')
+        .eq('reportId', reportId)
     ).data as SupabaseProbeResult[]
 }
 

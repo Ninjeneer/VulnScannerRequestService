@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
         "strict": false,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "lib": ["ES2022", "DOM"]
     }
 }

@@ -5,4 +5,5 @@ export type ScanUpdatePayload = {
     notification: boolean
     lastReportId?: string;
     currentReportId?: string
+    lastRun?: Date
 }

@@ -1,7 +1,7 @@
 import { NoProbeResultsForReport, ReportDoesNotExist, ScanDoesNotExist } from "../../exceptions/exceptions";
 import { ProbeResult } from "../../models/probe";
 import { Report } from "../../models/report";
-import { getProbeResultsByCurrentReportId, getProbeResultsByLastReportId } from "../../storage/probe.storage";
+import { getProbeResultsByReportId } from "../../storage/probe.storage";
 import { getScan } from "../../storage/scan.storage";
 import { getResultsByIds } from "../../storage/mongo/mongoProbe.storage";
 import * as reportMongoStorage from "../../storage/mongo/mongoReport.storage"
@@ -20,8 +20,7 @@ export const buildReport = async (reportId: string, isRebuild?: boolean): Promis
         throw new ReportDoesNotExist(reportId);
     }
 
-    const getProbesMethod = isRebuild ? getProbeResultsByLastReportId : getProbeResultsByCurrentReportId
-    const probeResults = await getProbesMethod(reportId);
+    const probeResults = await getProbeResultsByReportId(reportId);
     if (!probeResults) {
         throw new NoProbeResultsForReport(reportId);
     }

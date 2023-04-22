@@ -5,7 +5,7 @@ export const createScanRequest = z.object({
     periodicity: z.string().trim(),
     probes: z.array(z.object({
         name: z.string().trim(),
-        settings: z.any()
+        settings: z.object({}).optional()
     })),
     user_id: z.string()
 })

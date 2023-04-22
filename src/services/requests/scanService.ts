@@ -1,15 +1,14 @@
 import { CreateScanRequest, UpdateScanRequest } from "../requests/validators/scanRequest";
 import { v4 as uuidv4 } from 'uuid';
 import * as scanStorage from "../../storage/scan.storage";
-import { ScanStatus, ScanRequestResponse } from "../../models/scan";
-import { ProbeStatus } from "../../models/probe";
+import { ScanStatus, ScanRequestResponse, ScanWithProbes } from "../../models/scan";
+import { Probe, ProbeStatus } from "../../models/probe";
 import { Scan } from '../../models/scan'
 import { Report, SupabaseReport } from '../../models/report'
 import { publishProbeRequest } from "../../storage/awsSqsQueue";
-import { saveReport } from "../../storage/mongo/mongoReport.storage";
 import { createReport } from "../../storage/report.storage";
 import { ScanDoesNotExist } from "../../exceptions/exceptions";
-import { deleteProbes } from "../../storage/probe.storage";
+import { deleteProbes, updateProbesByScanId } from "../../storage/probe.storage";
 
 
 export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanRequestResponse> => {
@@ -17,10 +16,10 @@ export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanR
     console.log(`[REQUEST][${newScanId}] Received scan request ${newScanId}`)
 
     // Assing uids to probes
-    const probes = scanRequest.probes.map((probe) => {
+    const probes: Partial<Probe>[] = scanRequest.probes.map((probe) => {
         return {
             ...probe,
-            uid: uuidv4()
+            id: uuidv4()
         }
     })
 
@@ -40,10 +39,11 @@ export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanR
 
     console.log(`[REQUEST][${newScanId}] Saving probe start data...`)
     await scanStorage.saveProbesStartData(probes.map((probe) => ({
-        id: probe.uid,
+        id: probe.id,
         status: ProbeStatus.PENDING,
         scanId: newScanId,
-        name: probe.name
+        name: probe.name,
+        settings: probe.settings
     })))
     console.log(`[REQUEST][${newScanId}] Probe start data saved !`)
 
@@ -51,7 +51,7 @@ export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanR
     console.log(`[REQUEST][${newScanId}] Publishing request to Queue...`)
     await publishProbeRequest(probes.map((probe) => ({
         context: {
-            id: probe.uid,
+            id: probe.id,
             name: probe.name,
             target: scanRequest.target
         },
@@ -97,7 +97,8 @@ export const updateScan = async (scanId: string, scanWithProbes: UpdateScanReque
             id: uuidv4(),
             status: ProbeStatus.PENDING,
             scanId,
-            name: probe.name
+            name: probe.name,
+            settings: probe.settings
         })))
         console.log(`[REQUEST][SCAN][UPDATE][${scanId}] Probes created successfully`)
     }
@@ -115,4 +116,24 @@ export const updateScan = async (scanId: string, scanWithProbes: UpdateScanReque
     const updatedScan = await scanStorage.updateScan(scanId, payload)
     console.log(`[REQUEST][SCAN][UPDATE][${scanId}] Scan updated`)
     return updatedScan
+}
+
+export const restartScan = async (scan: ScanWithProbes): Promise<void> => {
+    console.log(`[REQUEST][SCAN][RESTART][${scan.id}] Restarting scan...`)
+    const report = await setupScanNewReport(scan)
+    await scanStorage.updateScan(scan.id, { currentReportId: report.id})
+
+    console.log(`[REQUEST][SCAN][RESTART][${scan.id}] Updating probes...`)
+    await updateProbesByScanId(scan.id, { status: ProbeStatus.PENDING })
+
+    console.log(`[REQUEST][SCAN][RESTART][${scan.id}] Publishing request to Queue...`)
+    await publishProbeRequest(scan.probes.map((probe) => ({
+        context: {
+            id: probe.id,
+            name: probe.name,
+            target: scan.target
+        },
+        settings: probe.settings
+    })));
+    console.log(`[REQUEST][SCAN][RESTART][${scan.id}] Published request to Queue !`)
 }

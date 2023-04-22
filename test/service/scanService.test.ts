@@ -38,7 +38,8 @@ describe('Scan Service Tests', () => {
                 id: expect.any(String),
                 status: ScanStatus.PENDING,
                 scanId: response.scanId,
-                name: 'probe-nmap'
+                name: 'probe-nmap',
+                settings: {}
             }
         ]);
         expect(publishProbeRequest).toHaveBeenCalledWith([{

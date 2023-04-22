@@ -30,12 +30,14 @@ const onProbeResult = async (probeId: string, resultId: string): Promise<boolean
         throw new ProbeDoesNotExist();
     }
     await updateProbe(probeId, { status: ProbeStatus.FINISHED });
-    await createProbeResult({ probeId, resultId })
-
+    
     const scan = await getScan(probe.scanId);
     if (!scan) {
         throw new ScanDoesNotExist(probe.scanId);
     }
+
+    await createProbeResult({ probeId, resultId, reportId: scan.currentReportId })
+
     if (isScanFinished(scan)) {
         console.log(`[RESULT][${scan.id}] Scan ${scan.id} is finished`)
 
@@ -51,7 +53,8 @@ const onProbeResult = async (probeId: string, resultId: string): Promise<boolean
             status: ScanStatus.FINISHED,
             notification: true,
             lastReportId: savedReport.id,
-            currentReportId: null
+            currentReportId: null,
+            lastRun: new Date()
         })
         console.log(`[REPORT][${scan.id}] Created report !`)
     }
