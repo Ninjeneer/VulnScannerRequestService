@@ -9,7 +9,7 @@ const periodicityMapping = {}
 
 const init = async () => {
     console.log(`[JOBS][SCAN][INIT] Initializating scan jobs...`)
-    const scans = await getScansWithProbes()
+    const scans = await getScansWithProbes() || []
     for (const scan of scans) {
         if (scan.periodicity !== 'ONCE') {
             const scanTask = cron.schedule(scan.periodicity, () => restartScan(scan))

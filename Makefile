@@ -15,3 +15,6 @@ dbs-up:
 
 dbs-down:
 	docker-compose -f ${DOCKER_COMPOSE_FILE_DB} down
+
+configure:
+	for id in $(docker ps | tr -s ' ' | cut -d ' ' -f1 | tail -n +2); do; docker network connect vulnscanner $id; done;
