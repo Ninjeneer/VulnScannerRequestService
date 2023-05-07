@@ -55,6 +55,20 @@ services:
     networks:
       - vulnscanner
 
+  stats-service:
+    build:
+      dockerfile: ./stats.dockerfile
+      target: dev
+      context: ./
+    
+    image: ninjeneer/vuln-scanner-stats-service
+    ports:
+      - 3003:3000
+    volumes:
+      - .:/app
+    networks:
+      - vulnscanner
+
 networks:
   vulnscanner:
     name: vulnscanner

@@ -13,3 +13,12 @@ export const updateReport = async (reportId: string, data: ReportUpdatePayload):
 export const getReportById = async (reportId: string): Promise<SupabaseReport> => {
     return (await supabaseClient.from('reports').select<string, SupabaseReport>('*').eq('id', reportId).single()).data
 }
+
+export const getReportsByUserId = async (userId: string): Promise<SupabaseReport[]> => {
+    const res = await supabaseClient.from('reports').select('*').eq('userId', userId)
+    if (res.error) {
+        console.log(res.error)
+        return []
+    }
+    return res.data
+}

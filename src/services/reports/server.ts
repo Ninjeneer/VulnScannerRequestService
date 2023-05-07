@@ -23,7 +23,6 @@ requireEnvVars([
     'SUPABASE_URL',
     'SUPABASE_KEY',
     'SERVER_PORT',
-    'MONGO_COLLECTION',
     'MONGO_URL',
     'MONGO_DB'
 ])

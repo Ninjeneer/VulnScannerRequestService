@@ -22,3 +22,7 @@ export const getReportById = async (id: string): Promise<Report> => {
 export const updateReport = async (reportId: string, report: Report): Promise<Report> => {
     return (await ReportModel.findByIdAndUpdate(reportId, report)).toObject()
 }
+
+export const getReportsById = async (ids: string[]): Promise<Report[]> => {
+    return (await ReportModel.find({ _id: { $in: ids } })).map((o) => o.toObject())
+}

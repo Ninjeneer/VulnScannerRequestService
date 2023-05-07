@@ -8,6 +8,7 @@
     "dev:reports": "nodemon src/services/reports/server.ts",
     "dev:jobs": "nodemon src/services/jobs/index.ts",
     "dev:billing": "nodemon src/services/billing/server.ts",
+    "dev:stats": "nodemon src/services/stats/server.ts",
     "build": "swc src -d dist/src",
     "test": "jest test"
   },

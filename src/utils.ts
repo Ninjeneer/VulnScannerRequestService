@@ -10,3 +10,5 @@ export const requireEnvVars = (vars: string[]) => {
         }
     });
 }
+
+export const isDefined = (o): boolean => o !== undefined && o !== null
