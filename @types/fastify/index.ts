@@ -1,4 +1,4 @@
-import { User } from "@supabase/supabase-js";
+import { User } from "../../src/models/user";
 
 declare module 'fastify' {
     export interface FastifyRequest {

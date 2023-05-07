@@ -21,3 +21,27 @@ export class NoProbeResultsForReport extends Error {
         super(`No probe results for report ${id} found`)
     }
 }
+
+export class UserDoesNotExist extends Error {
+    constructor(id = "") {
+        super(`User id ${id} does not exist`)
+    }
+}
+
+export class StripePriceDoesNotExist extends Error {
+    constructor(id = "") {
+        super(`Stripe Price ${id} does not exist`)
+    }
+}
+
+export class MissingData extends Error {
+    constructor(fieldName = "", source = "") {
+        super(`Missing ${fieldName} in ${source}`)
+    }
+}
+
+export class StripeProductDoesNotExist extends Error {
+    constructor(id = "") {
+        super(`Stripe Product ${id} does not exist`)
+    }
+}

@@ -9,7 +9,8 @@ import { getMongoReportById, rebuildReport } from "./reportService";
 import { getReportByIdRequest, getSupabaseReportByIdRequest } from "./validators/reportRequests";
 import { connect } from "mongoose";
 import { initResponsesQueue } from "./probeResultService";
-if (process.env.NODE_ENV !== "production") {
+import { isProd } from "../../config";
+if (!isProd) {
     loadLocalEnv();
 }
 

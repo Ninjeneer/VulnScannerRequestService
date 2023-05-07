@@ -41,6 +41,20 @@ services:
     networks:
       - vulnscanner
 
+  billing-service:
+    build:
+      dockerfile: ./billing.dockerfile
+      target: dev
+      context: ./
+    
+    image: ninjeneer/vuln-scanner-billing-service
+    ports:
+      - 3002:3000
+    volumes:
+      - .:/app
+    networks:
+      - vulnscanner
+
 networks:
   vulnscanner:
     name: vulnscanner

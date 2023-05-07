@@ -4,12 +4,10 @@ import { authMiddleware } from '../middlewares/authMiddleware'
 import { createScanRequest, updateScanRequest } from "./validators/scanRequest";
 import * as scanService from './scanService'
 import { z } from 'zod'
-
-
-
 import { config as loadLocalEnv } from "dotenv";
 import { requireEnvVars } from "../../utils";
-if (process.env.NODE_ENV !== "production") {
+import { isProd } from "../../config";
+if (!isProd) {
 	loadLocalEnv();
 }
 
@@ -86,7 +84,7 @@ server.get('/probes', async (req, res) => {
 		type: 'Passive'
 	}]
 
-	if (process.env.NODE_ENV === "dev") {
+	if (!isProd) {
 		probes.push({
 			name: 'probe-dummy',
 			description: 'Dummy probe for dev',

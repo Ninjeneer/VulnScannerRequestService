@@ -3,4 +3,17 @@
         "source.fixAll.eslint": true
     },
     "jest.autoRun": {},
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "data": true
+    },
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true,
+        "**/.hg/store/**": true,
+        "data": true
+    }
 }

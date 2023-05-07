@@ -24,3 +24,8 @@ interface Appmetadata {
   provider: string;
   providers: string[];
 }
+
+export type User = {
+  id: string
+  email: string
+}
