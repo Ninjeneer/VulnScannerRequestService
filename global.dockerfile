@@ -18,4 +18,4 @@ FROM node:alpine as prod
 WORKDIR /app
 COPY --from=builder /app/node_modules ./dist/node_modules
 COPY --from=builder /app/dist/src ./dist/src
-CMD ["node", "dist/src/services/global/server.js"]
+CMD ["node", "dist/src/services/global/index.js"]
