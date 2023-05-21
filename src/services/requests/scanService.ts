@@ -4,16 +4,23 @@ import * as scanStorage from "../../storage/scan.storage";
 import { ScanStatus, ScanRequestResponse, ScanWithProbes } from "../../models/scan";
 import { Probe, ProbeStatus } from "../../models/probe";
 import { Scan } from '../../models/scan'
-import { Report, SupabaseReport } from '../../models/report'
+import { SupabaseReport } from '../../models/report'
 import { publishProbeRequest } from "../../storage/awsSqsQueue";
 import { createReport } from "../../storage/report.storage";
-import { ScanDoesNotExist } from "../../exceptions/exceptions";
+import { ScanDoesNotExist, UserHasNotEnoughCredits } from "../../exceptions/exceptions";
 import { deleteProbes, updateProbesByScanId } from "../../storage/probe.storage";
+import { getUserCredits, updateUserCredits } from "../../storage/credits.storage";
 
 
 export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanRequestResponse> => {
     const newScanId = uuidv4();
     console.log(`[REQUEST][${newScanId}] Received scan request ${newScanId}`)
+
+    const userCredits = await getUserCredits(scanRequest.user_id)
+
+    if (userCredits < scanRequest.probes?.length) {
+        throw new UserHasNotEnoughCredits(scanRequest.user_id)
+    }
 
     // Assing uids to probes
     const probes: Partial<Probe>[] = scanRequest.probes.map((probe) => {
@@ -34,7 +41,7 @@ export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanR
         userId: scanRequest.user_id
     })
     const currentReport = await setupScanNewReport(newScan)
-    await scanStorage.updateScan(newScan.id, { currentReportId: currentReport.id})
+    await scanStorage.updateScan(newScan.id, { currentReportId: currentReport.id })
     console.log(`[REQUEST][${newScanId}] Scan start data saved !`)
 
     console.log(`[REQUEST][${newScanId}] Saving probe start data...`)
@@ -58,6 +65,9 @@ export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanR
         settings: probe.settings
     })));
     console.log(`[REQUEST][${newScanId}] Published request to Queue !`)
+
+    // Update user credits
+    await updateUserCredits(scanRequest.user_id, userCredits - scanRequest.probes?.length)
 
     return { scanId: newScanId };
 }
@@ -120,8 +130,13 @@ export const updateScan = async (scanId: string, scanWithProbes: UpdateScanReque
 
 export const restartScan = async (scan: ScanWithProbes): Promise<void> => {
     console.log(`[REQUEST][SCAN][RESTART][${scan.id}] Restarting scan...`)
+    const userCredits = await getUserCredits(scan.userId)
+    if (userCredits < scan.probes?.length) {
+        throw new UserHasNotEnoughCredits(scan.userId)
+    }
+
     const report = await setupScanNewReport(scan)
-    await scanStorage.updateScan(scan.id, { currentReportId: report.id})
+    await scanStorage.updateScan(scan.id, { currentReportId: report.id })
 
     console.log(`[REQUEST][SCAN][RESTART][${scan.id}] Updating probes...`)
     await updateProbesByScanId(scan.id, { status: ProbeStatus.PENDING })
@@ -136,4 +151,7 @@ export const restartScan = async (scan: ScanWithProbes): Promise<void> => {
         settings: probe.settings
     })));
     console.log(`[REQUEST][SCAN][RESTART][${scan.id}] Published request to Queue !`)
+
+    // Update user credits
+    await updateUserCredits(scan.userId, userCredits - scan.probes?.length)
 }

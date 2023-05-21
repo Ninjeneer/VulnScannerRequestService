@@ -9,6 +9,7 @@
     "dev:jobs": "nodemon src/services/jobs/index.ts",
     "dev:billing": "nodemon src/services/billing/server.ts",
     "dev:stats": "nodemon src/services/stats/server.ts",
+    "dev:global": "nodemon src/services/global/index.ts",
     "build": "swc src -d dist/src",
     "test": "jest test"
   },

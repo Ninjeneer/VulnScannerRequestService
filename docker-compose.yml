@@ -69,6 +69,18 @@ services:
     networks:
       - vulnscanner
 
+  global-service:
+    build:
+      dockerfile: ./global.dockerfile
+      target: dev
+      context: ./
+    
+    image: ninjeneer/vuln-scanner-global-service
+    volumes:
+      - .:/app
+    networks:
+      - vulnscanner
+
 networks:
   vulnscanner:
     name: vulnscanner

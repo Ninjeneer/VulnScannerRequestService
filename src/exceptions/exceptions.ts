@@ -28,6 +28,12 @@ export class UserDoesNotExist extends Error {
     }
 }
 
+export class UserHasNotEnoughCredits extends Error {
+    constructor(id = "") {
+        super(`User id ${id} has not enough credits`)
+    }
+}
+
 export class StripePriceDoesNotExist extends Error {
     constructor(id = "") {
         super(`Stripe Price ${id} does not exist`)

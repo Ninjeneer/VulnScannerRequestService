@@ -128,5 +128,6 @@ type Automatictax = {
 export type StripeProduct = Stripe.Product & {
     metadata: {
         plan?: string
+        credits?: number
     }
 }

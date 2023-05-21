@@ -12,3 +12,9 @@ export const getConfig = () => {
         ...commonConfig
     }
 }
+
+export const creditsPlanMapping = {
+    'free': 10,
+    'premium': 100,
+    'enterprise': 1000
+}

@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { config as loadLocalEnv } from "dotenv";
 import { requireEnvVars } from "../../utils";
 import { isProd } from "../../config";
+import { UserHasNotEnoughCredits } from "../../exceptions/exceptions";
 if (!isProd) {
 	loadLocalEnv();
 }
@@ -49,6 +50,8 @@ server.post("/scans", async (req, res) => {
 		if (e instanceof z.ZodError) {
 			console.warn(e)
 			res.status(400).send(e);
+		} else if (e instanceof UserHasNotEnoughCredits) {
+			res.status(406).send('Not enough credit to run scan')
 		} else {
 			console.error(e)
 			res.status(500).send(e);

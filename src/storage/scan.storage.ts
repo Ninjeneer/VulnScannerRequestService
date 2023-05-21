@@ -36,8 +36,8 @@ export const listenScans = (onChange: (payload: RealtimePostgresChangesPayload<S
         .subscribe()
 }
 
-export const getScanByUserID = async (userId: string): Promise<Scan[]> => {
-    const res = await supabaseClient.from('scans').select('*').eq('userId', userId)
+export const getScansWithProbesByUserId = async (userId: string): Promise<ScanWithProbes[]> => {
+    const res = await supabaseClient.from('scans').select('*, probes(*)').eq('userId', userId)
     if (res.error) {
         console.log(res.error)
         return []

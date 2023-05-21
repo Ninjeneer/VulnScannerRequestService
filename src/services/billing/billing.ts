@@ -1,5 +1,6 @@
-import { UserDoesNotExist } from '../../exceptions/exceptions'
+import { MissingData, UserDoesNotExist } from '../../exceptions/exceptions'
 import { User } from '../../models/user'
+import { updateUserCredits } from '../../storage/credits.storage'
 import { getUserById, getUserSettings, updateUserSettings } from '../../storage/user.storage'
 import * as billing from './DAL/stripe/stripe'
 import { StripeCheckoutSessionCompleted } from './DAL/stripe/stripeTypes'
@@ -26,14 +27,15 @@ export const handleEvent = (eventType: string, data: any) => {
 }
 
 const handleCheckoutSession = async (data: StripeCheckoutSessionCompleted['data']) => {
-    const { userId, plan } = data.object.metadata
+    const { userId, plan, credits } = data.object.metadata
     if (!userId) {
-        console.error('Missing userId in billing hook event')
-        return
+        throw new MissingData('userId', 'billing plan hook event')
     }
     if (!plan) {
-        console.error('Missing plan in billing hook event')
-        return
+        throw new MissingData('plan', 'billing hook event')
+    }
+    if (!credits) {
+        throw new MissingData('credits', 'billing hook event')
     }
 
     const user = await getUserById(userId)
@@ -49,4 +51,7 @@ const handleCheckoutSession = async (data: StripeCheckoutSessionCompleted['data'
         await updateUserSettings(userId, { ...userSettings, plan })
         console.log(`[BILLING][CHECKOUT][NEW SUB] Updated settings of user ${user.email}`)
     }
+
+    // Give the user the amount of credit subscribed for
+    await updateUserCredits(userId, credits)
 }
