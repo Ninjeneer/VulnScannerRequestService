@@ -10,6 +10,7 @@ import { createReport } from "../../storage/report.storage";
 import { ScanDoesNotExist, UserHasNotEnoughCredits } from "../../exceptions/exceptions";
 import { deleteProbes, updateProbesByScanId } from "../../storage/probe.storage";
 import { getUserCredits, updateUserCredits } from "../../storage/credits.storage";
+import { probesPriceMapping } from "../../config";
 
 
 export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanRequestResponse> => {
@@ -50,7 +51,8 @@ export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanR
         status: ProbeStatus.PENDING,
         scanId: newScanId,
         name: probe.name,
-        settings: probe.settings
+        settings: probe.settings,
+        price: probesPriceMapping[probe.name]
     })))
     console.log(`[REQUEST][${newScanId}] Probe start data saved !`)
 
@@ -108,7 +110,8 @@ export const updateScan = async (scanId: string, scanWithProbes: UpdateScanReque
             status: ProbeStatus.PENDING,
             scanId,
             name: probe.name,
-            settings: probe.settings
+            settings: probe.settings,
+            price: probesPriceMapping[probe.name]
         })))
         console.log(`[REQUEST][SCAN][UPDATE][${scanId}] Probes created successfully`)
     }

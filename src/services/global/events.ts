@@ -1,8 +1,16 @@
-import supabase from "../../storage/supabase"
 import {listenSettings} from '../../storage/settings.storage'
 import { MissingData } from "../../exceptions/exceptions"
 import { updateUserCredits } from "../../storage/credits.storage"
 import { creditsPlanMapping } from "../../config"
+import loadenv from 'dotenv'
+import { requireEnvVars } from "../../utils"
+
+loadenv.config()
+
+requireEnvVars([
+    'SUPABASE_URL',
+	'SUPABASE_KEY',
+])
 
 export const listenEvents = () => {
     listenSettingsForFreePlanCredits()
@@ -24,7 +32,7 @@ const listenSettingsForFreePlanCredits = () => {
             // Credits amount are handled by Stripe webhook, but we need to handle Free plan registration
             if (plan === 'free') {
                 const credits = creditsPlanMapping[plan]
-                await updateUserCredits(userId, credits)
+                await updateUserCredits(userId, { remainingCredits: credits })
                 console.log(`[EVENTS][SETTINGS] Set ${credits} credits for FREE plan to ${userId}`)
             }
         }

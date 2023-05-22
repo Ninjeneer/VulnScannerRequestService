@@ -4,6 +4,7 @@ export type Probe = {
     scanId: string;
     name: string
     settings: Record<string, any>
+    price: number
 }
 
 export enum ProbeStatus {

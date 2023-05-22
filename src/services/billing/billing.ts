@@ -1,9 +1,11 @@
+import { creditsPlanMapping } from '../../config'
 import { MissingData, UserDoesNotExist } from '../../exceptions/exceptions'
 import { User } from '../../models/user'
-import { updateUserCredits } from '../../storage/credits.storage'
+import { getUserCredits, updateUserCredits } from '../../storage/credits.storage'
 import { getUserById, getUserSettings, updateUserSettings } from '../../storage/user.storage'
 import * as billing from './DAL/stripe/stripe'
 import { StripeCheckoutSessionCompleted } from './DAL/stripe/stripeTypes'
+import { addMonths } from 'date-fns'
 
 export const createCheckoutSession = async (priceId: string, user: User, isUpdate = false) => {
     const session = await billing.createCheckoutSession(priceId, user.id, user.email, isUpdate)
@@ -27,15 +29,12 @@ export const handleEvent = (eventType: string, data: any) => {
 }
 
 const handleCheckoutSession = async (data: StripeCheckoutSessionCompleted['data']) => {
-    const { userId, plan, credits } = data.object.metadata
+    const { userId, plan } = data.object.metadata
     if (!userId) {
         throw new MissingData('userId', 'billing plan hook event')
     }
     if (!plan) {
         throw new MissingData('plan', 'billing hook event')
-    }
-    if (!credits) {
-        throw new MissingData('credits', 'billing hook event')
     }
 
     const user = await getUserById(userId)
@@ -53,5 +52,6 @@ const handleCheckoutSession = async (data: StripeCheckoutSessionCompleted['data'
     }
 
     // Give the user the amount of credit subscribed for
-    await updateUserCredits(userId, credits)
+    const userCredits = await getUserCredits(userId) || 0
+    await updateUserCredits(userId, { remainingCredits: userCredits + creditsPlanMapping[plan], renewal: addMonths(new Date(), 1) })
 }

@@ -6,7 +6,7 @@ import * as scanService from './scanService'
 import { z } from 'zod'
 import { config as loadLocalEnv } from "dotenv";
 import { requireEnvVars } from "../../utils";
-import { isProd } from "../../config";
+import { getAvailableProbes, isProd } from "../../config";
 import { UserHasNotEnoughCredits } from "../../exceptions/exceptions";
 if (!isProd) {
 	loadLocalEnv();
@@ -77,22 +77,5 @@ server.patch('/scans/:id', async (req, res) => {
 })
 
 server.get('/probes', async (req, res) => {
-	const probes = [{
-		name: 'probe-nmap',
-		description: 'Cette sonde va tenter d’dentifier tous les services ouverts sur le serveur cible, et de trouver des vulnérabilités connues associées à leur version.',
-		type: 'Passive'
-	}, {
-		name: 'probe-nikto',
-		description: 'Cette sonde va tenter de trouver les sous-domaines sensibles les plus connus, attachés au domaine cible.',
-		type: 'Passive'
-	}]
-
-	if (!isProd) {
-		probes.push({
-			name: 'probe-dummy',
-			description: 'Dummy probe for dev',
-			type: 'Passive'
-		})
-	}
-	return probes
+	return getAvailableProbes()
 })
