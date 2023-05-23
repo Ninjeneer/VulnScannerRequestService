@@ -31,11 +31,6 @@ export const getAvailableProbes = () => {
 		description: 'Cette sonde va tenter d’dentifier tous les services ouverts sur le serveur cible, et de trouver des vulnérabilités connues associées à leur version.',
 		type: 'Passive',
 		price: probesPriceMapping['probe-nmap']
-	}, {
-		name: 'probe-nikto',
-		description: 'Cette sonde va tenter de trouver les sous-domaines sensibles les plus connus, attachés au domaine cible.',
-		type: 'Passive',
-		price: probesPriceMapping['probe-nikto']
 	}]
 
 	if (!isProd) {
