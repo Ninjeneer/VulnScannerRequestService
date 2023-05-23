@@ -10,7 +10,7 @@ import { createReport } from "../../storage/report.storage";
 import { ScanDoesNotExist, UserHasNotEnoughCredits } from "../../exceptions/exceptions";
 import { deleteProbes, updateProbesByScanId } from "../../storage/probe.storage";
 import { getUserCredits, updateUserCredits } from "../../storage/credits.storage";
-import { probesPriceMapping } from "../../config";
+import { getAvailableProbes, probesPriceMapping } from "../../config";
 
 
 export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanRequestResponse> => {
@@ -19,7 +19,9 @@ export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanR
 
     const userCredits = await getUserCredits(scanRequest.user_id)
 
-    if (userCredits < scanRequest.probes?.length) {
+    const availableProbes = getAvailableProbes()
+    const sumOfCreditsToUse = scanRequest.probes?.reduce((sum, probe) => sum + availableProbes[probe.name]?.price, 0)
+    if (userCredits < sumOfCreditsToUse) {
         throw new UserHasNotEnoughCredits(scanRequest.user_id)
     }
 
@@ -69,7 +71,7 @@ export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanR
     console.log(`[REQUEST][${newScanId}] Published request to Queue !`)
 
     // Update user credits
-    await updateUserCredits(scanRequest.user_id, userCredits - scanRequest.probes?.length)
+    await updateUserCredits(scanRequest.user_id, { remainingCredits: userCredits - sumOfCreditsToUse })
 
     return { scanId: newScanId };
 }
@@ -134,7 +136,9 @@ export const updateScan = async (scanId: string, scanWithProbes: UpdateScanReque
 export const restartScan = async (scan: ScanWithProbes): Promise<void> => {
     console.log(`[REQUEST][SCAN][RESTART][${scan.id}] Restarting scan...`)
     const userCredits = await getUserCredits(scan.userId)
-    if (userCredits < scan.probes?.length) {
+    const availableProbes = getAvailableProbes()
+    const sumOfCreditsToUse = scan.probes?.reduce((sum, probe) => sum + availableProbes[probe.name]?.price, 0)
+    if (userCredits < sumOfCreditsToUse) {
         throw new UserHasNotEnoughCredits(scan.userId)
     }
 
@@ -156,5 +160,5 @@ export const restartScan = async (scan: ScanWithProbes): Promise<void> => {
     console.log(`[REQUEST][SCAN][RESTART][${scan.id}] Published request to Queue !`)
 
     // Update user credits
-    await updateUserCredits(scan.userId, userCredits - scan.probes?.length)
+    await updateUserCredits(scan.userId, { remainingCredits: userCredits - sumOfCreditsToUse })
 }
