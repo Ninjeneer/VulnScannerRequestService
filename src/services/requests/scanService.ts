@@ -20,7 +20,7 @@ export const requestScan = async (scanRequest: CreateScanRequest): Promise<ScanR
     const userCredits = await getUserCredits(scanRequest.user_id)
 
     const availableProbes = getAvailableProbes()
-    const sumOfCreditsToUse = scanRequest.probes?.reduce((sum, probe) => sum + availableProbes[probe.name]?.price, 0)
+    const sumOfCreditsToUse = scanRequest.probes?.reduce((sum, probe) => sum + availableProbes.find((p) => p.name === probe.name)?.price, 0)
     if (userCredits < sumOfCreditsToUse) {
         throw new UserHasNotEnoughCredits(scanRequest.user_id)
     }
